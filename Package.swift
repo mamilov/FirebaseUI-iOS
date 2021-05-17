@@ -25,7 +25,7 @@ let package = Package(
     .library(
       name: "FirebaseGoogleAuthUI",
       targets: ["FirebaseGoogleAuthUI"]
-    )
+    ),
     .library(
       name: "FirebaseAnonymousAuthUI",
       targets: ["FirebaseAnonymousAuthUI"]
