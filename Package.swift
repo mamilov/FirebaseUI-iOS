@@ -23,6 +23,10 @@ let package = Package(
   platforms: [.iOS(.v10)],
   products: [
     .library(
+      name: "FirebaseGoogleAuthUI",
+      targets: ["FirebaseGoogleAuthUI"]
+    )
+    .library(
       name: "FirebaseAnonymousAuthUI",
       targets: ["FirebaseAnonymousAuthUI"]
     ),
