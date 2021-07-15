@@ -85,6 +85,11 @@ let package = Package(
       url: "https://github.com/SDWebImage/SDWebImage.git",
       from: "5.0.0"
     ),
+    .package(
+      name: "GoogleSignIn",
+      url: "https://github.com/google/GoogleSignIn-iOS",
+      from: "6.0.0"
+    )
   ],
   targets: [
     .target(
@@ -186,7 +191,6 @@ let package = Package(
      .target(
        name: "FirebaseGoogleAuthUI",
        dependencies: [
-         "AuthUI",
          "GoogleSignIn"
        ],
        path: "FirebaseGoogleAuthUI/Sources",
