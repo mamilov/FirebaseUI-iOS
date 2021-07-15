@@ -184,12 +184,12 @@ let package = Package(
       ]
     ),
      .target(
-       name: "GoogleAuthUI",
+       name: "FirebaseGoogleAuthUI",
        dependencies: [
          "AuthUI",
          "GoogleSignIn"
        ],
-       path: "GoogleAuth/FirebaseGoogleAuthUI",
+       path: "FirebaseGoogleAuthUI/Sources",
        exclude: ["Info.plist"],
        resources: [
          .process("Resources"),
