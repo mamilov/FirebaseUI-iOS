@@ -183,23 +183,23 @@ let package = Package(
         .headerSearchPath("../../"),
       ]
     ),
-    // .target(
-    //   name: "GoogleAuthUI",
-    //   dependencies: [
-    //     "AuthUI",
-    //     // missing google auth dependency
-    //   ],
-    //   path: "GoogleAuth/FirebaseGoogleAuthUI",
-    //   exclude: ["Info.plist"],
-    //   resources: [
-    //     .process("Resources"),
-    //     .process("Strings"),
-    //   ],
-    //   publicHeadersPath: ".",
-    //   cSettings: [
-    //     .headerSearchPath("./"),
-    //   ]
-    // ),
+     .target(
+       name: "GoogleAuthUI",
+       dependencies: [
+         "AuthUI",
+         "GoogleSignIn"
+       ],
+       path: "GoogleAuth/FirebaseGoogleAuthUI",
+       exclude: ["Info.plist"],
+       resources: [
+         .process("Resources"),
+         .process("Strings"),
+       ],
+       publicHeadersPath: ".",
+       cSettings: [
+         .headerSearchPath("./"),
+       ]
+     ),
     .target(
       name: "FirebaseOAuthUI",
       dependencies: [
