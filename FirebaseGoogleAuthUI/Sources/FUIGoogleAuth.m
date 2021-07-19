@@ -29,14 +29,14 @@ static NSString *const kTableName = @"FirebaseGoogleAuthUI";
 /** @var kBundleName
  @brief The name of the bundle to search for resources.
  */
-static NSString *const kBundleName = @"FirebaseGoogleAuthUI";
+static NSString *const kBundleName = @"FirebaseUI_FirebaseGoogleAuthUI";
 
 /** @var kSignInWithGoogle
  @brief The string key for localized button text.
  */
 static NSString *const kSignInWithGoogle = @"SignInWithGoogle";
 
-@interface FUIGoogleAuth () //<GIDSignInDelegate>
+@interface FUIGoogleAuth ()
 
 /** @property authUI
  @brief FUIAuth instance of the application.
@@ -161,9 +161,7 @@ presentingViewController:(nullable UIViewController *)presentingViewController
         return;
     }
     
-//    GIDSignIn *signIn = [self configuredGoogleSignIn];
     
-    GIDConfiguration *configuration = [[GIDConfiguration alloc] initWithClientID:[[FIRApp defaultApp] options].clientID];
     
     _pendingSignInCallback = ^(FIRAuthCredential *_Nullable credential,
                                NSError *_Nullable error,
@@ -174,18 +172,30 @@ presentingViewController:(nullable UIViewController *)presentingViewController
         }
     };
     
-    //  signIn.loginHint = defaultValue;
-    [GIDSignIn.sharedInstance signInWithConfiguration: configuration
-                             presentingViewController:presentingViewController
-                                                 hint:defaultValue
-                                             callback:^(GIDGoogleUser * _Nullable user,
-                                                        NSError * _Nullable error) {
+    GIDSignIn* signIn = [self configuredGoogleSignIn];
+    GIDConfiguration* configuration = [self googleSignInConfiguration];
+    
+    [signIn signInWithConfiguration: configuration
+           presentingViewController:presentingViewController
+                               hint:defaultValue
+                           callback:^(GIDGoogleUser * _Nullable user,
+                                      NSError * _Nullable error) {
         if (error) {
-            [NSString stringWithFormat:@"Status: Authentication error: %@", error];
+            [NSString stringWithFormat:@"Google Authentication error: %@", error];
             return;
         }
         
-        [self signIn:GIDSignIn.sharedInstance didSignInForUser:user withError:error];
+        if (!_scopes || !_scopes.count) {
+            [signIn addScopes:_scopes presentingViewController:presentingViewController callback:^(GIDGoogleUser * _Nullable user, NSError * _Nullable error) {
+                if (error) {
+                    [NSString stringWithFormat:@"Google add scopes error: %@", error];
+                    return;
+                }
+                [self signIn:[self configuredGoogleSignIn] didSignInForUser:user withError:error];
+            }];
+        } else {
+            [self signIn:signIn didSignInForUser:user withError:error];
+        }
     }];
 }
 
@@ -239,7 +249,7 @@ presentingViewController:(nullable UIViewController *)presentingViewController
     return _email;
 }
 
-#pragma mark - GIDSignInDelegate methods
+#pragma mark - GIDSignInCallback methods
 
 - (void)signIn:(GIDSignIn *)signIn
 didSignInForUser:(GIDGoogleUser *)user
@@ -279,17 +289,30 @@ didSignInForUser:(GIDGoogleUser *)user
  */
 - (GIDSignIn *)configuredGoogleSignIn {
     GIDSignIn *signIn = [GIDSignIn sharedInstance];
-//    signIn.delegate = self;
-//    signIn.shouldFetchBasicProfile = YES;
-//    signIn.clientID = [[FIRApp defaultApp] options].clientID;
-//    if (!signIn.clientID) {
-//        [NSException raise:NSInternalInconsistencyException
-//                    format:@"OAuth client ID not found. Please make sure Google Sign-In is enabled in "
-//         @"the Firebase console. You may have to download a new GoogleService-Info.plist file after "
-//         @"enabling Google Sign-In."];
-//    }
-//    signIn.scopes = _scopes;
+    //    signIn.delegate = self;
+    //    signIn.shouldFetchBasicProfile = YES;
+    //    signIn.clientID = [[FIRApp defaultApp] options].clientID;
+    //    if (!signIn.clientID) {
+    //        [NSException raise:NSInternalInconsistencyException
+    //                    format:@"OAuth client ID not found. Please make sure Google Sign-In is enabled in "
+    //         @"the Firebase console. You may have to download a new GoogleService-Info.plist file after "
+    //         @"enabling Google Sign-In."];
+    //    }
+    //    signIn.scopes = _scopes;
     return signIn;
+}
+
+- (GIDConfiguration *)googleSignInConfiguration {
+    GIDConfiguration *configuration = [[GIDConfiguration alloc] initWithClientID:[[FIRApp defaultApp] options].clientID];
+    
+    if (!configuration.clientID) {
+        [NSException raise:NSInternalInconsistencyException
+                    format:@"OAuth client ID not found. Please make sure Google Sign-In is enabled in "
+         @"the Firebase console. You may have to download a new GoogleService-Info.plist file after "
+         @"enabling Google Sign-In."];
+    }
+    
+    return configuration;
 }
 
 /** @fn callbackWithCredential:error:
